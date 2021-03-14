@@ -16,48 +16,51 @@ location_chips = [-2, 0, 0, 0, 0, 5, 0, 3, 0, 0, 0, -5, 5, 0, 0, 0, -3, 0, -5, 0
 
 class FCanvas(tk.Canvas):
     """"""
-
-    def __init__(self, master, width, height):
+    def __init__(self, master, width, height, position):
         super().__init__(master, bg='Moccasin')
         self.master = master
         self.width = width
         self.height = height
         self.wt = self.width // 2
         self.ht = int(self.height * 3 / 4)
+        self.position = position
 
+        self.bind("<Configure>", self.change_resize)
+        self.height = self.master.winfo_reqheight()
+        self.width = self.master.winfo_reqwidth()
 
     def change_resize(self, event):
-        pass
-
-    def draw_top(self, position, quantity):
         """"""
-        if not position % 2:
-            self.create_polygon((0, 0), (self.wt, self.ht), (self.wt + self.wt, 0),
-                            fill='orange', outline='black')
-        else:
-            self.create_polygon((0, 0), (self.wt, 1.1*self.ht), (self.wt + self.wt, 0),
-                                fill='sienna', outline='black')
-        if not quantity:
-            pass
-        elif quantity > 0:
-            chip_color = 'white'
-        else:
-            chip_color = 'black'
+        wscale = event.width / self.width
+        hscale = event.height / self.height
+        self.width = event.width
+        self.height = event.height
+        self.scale("all", 0, 0, wscale, hscale)
 
-    def draw_botton(self, position, quantity=0):
+    def draw_chips(self, quantity):
         """"""
-        if not position % 2:
-            self.create_polygon((0, 1.1*self.height), (self.wt, 1.1*self.height - 1.1*self.ht),\
-                                (self.wt + self.wt, 1.1*self.height), fill='orange', outline='black')
-        else:
-            self.create_polygon((0, 1.1*self.height), (self.wt, 1.1*self.height - self.ht),\
-                                (self.wt + self.wt, 1.1*self.height), fill='sienna', outline='black')
-        if not quantity:
-            pass
-        elif quantity > 0:
-            chip_color = 'white'
-        else:
-            chip_color = 'black'
+        if quantity > 0:
+            self.chip_color = 'white'
+        if quantity < 0:
+            self.chip_color = 'black'
+        x0 = 0.15 * self.width
+        x1 = 0.85 * self.width
+        xr = x1 - x0
+        for i in range(abs(quantity)):
+            if self.position < 12:
+                y0 = self.height - 0.7 * self.width - i * 0.7 * self.width
+                y1 = self.height - i * 0.7 * self.width
+            else:
+                y0 = i * 0.7 * self.width
+                y1 = 0.7 * self.width + i * 0.7 * self.width
+            yr = y1 - y0
+            yx = yr - xr
+            if yx > 0:
+                y1 = y1 - yx
+            if yx < 0:
+                x0 = x0 + 0.5 * yx
+                x1 = x1 - 0.5 * yx
+            self.create_oval(x0, y0, x1, y1, fill=self.chip_color)
 
 
 
@@ -65,7 +68,6 @@ def canvases_init(frame0, frame1, width, height):
     """Sorts the array and loads the frames with canvases"""
     stack0 = deque()
     stack1 = deque()
-
     frames = []
     f1 = f0 = 0
     for f in frame1.frames:
@@ -80,25 +82,31 @@ def canvases_init(frame0, frame1, width, height):
             frames.append(stack1.pop())
         else:
             stack0.append(fr)
-
         f0 += 1
     for _ in range(12):
         frames.append(stack0.pop())
     for _ in range(6):
         frames.append(stack1.pop())
 
-
     canvases = []
-
-    for fr in frames:
-        canvas = FCanvas(fr, width, height)
-        canvas.pack(expand=True, fill=tk.BOTH)
-        canvases.append(canvas)
-
     position = 0
-    for canvas in canvases:
-        if position < 12:
-            canvas.draw_botton(position, 0)
+    for fr in frames:
+        canvas = FCanvas(fr, width, height, position)
+        canvas.pack(expand=True, fill=tk.BOTH)
+        if position >= 12:  # drawing triangles based on position
+            if not position % 2:
+                canvas.create_polygon((0, 0), (canvas.wt, canvas.ht), (canvas.wt + canvas.wt, 0),
+                                      fill='orange', outline='black')
+            else:
+                canvas.create_polygon((0, 0), (canvas.wt, 1.1 * canvas.ht), (canvas.wt + canvas.wt, 0),
+                                      fill='sienna', outline='black')
         else:
-            canvas.draw_top(position, 0)
+            if not position % 2:
+                canvas.create_polygon((0, canvas.height), (canvas.wt, canvas.height - canvas.ht),
+                                      (canvas.wt + canvas.wt, canvas.height), fill='orange', outline='black')
+            else:
+                canvas.create_polygon((0, canvas.height), (canvas.wt, 1.1 * canvas.height - canvas.ht),
+                                      (canvas.wt + canvas.wt, canvas.height), fill='sienna', outline='black')
+        canvas.draw_chips(location_chips[position])
+        canvases.append(canvas)
         position += 1
