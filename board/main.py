@@ -3,7 +3,7 @@ from tkinter import ttk
 
 
 import board
-import fields
+import toplev
 
 WIDTH, HEIGHT = 1200, 800
 WIDTH_MIN, HEIGHT_MIN = 600, 400
@@ -15,5 +15,6 @@ WIDTH_MIN, HEIGHT_MIN = 600, 400
 if __name__ == '__main__':
     """"""
     window = board.Window(WIDTH, HEIGHT)
-    board.Window.draw_board(window)
+    option = toplev.OToplevel(WIDTH_MIN, HEIGHT_MIN)
+#    window.lift()
     window.mainloop()

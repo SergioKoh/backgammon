@@ -73,10 +73,13 @@ class Window(tk.Tk):
     def __init__(self, w, h):
         super().__init__()
         self.title("Backgammon")
+        self.width = w
+        self.height = h
         x, y = self.center_screen(w, h)
         self.geometry(f'{w}x{h}+{x}+{y}')
         self.resizable(True, True)
         self.minsize(WIDTH_MIN, HEIGHT_MIN)
+        self.draw_board()
 
     def center_screen(self, w, h):
         """Centering the window."""
@@ -84,14 +87,12 @@ class Window(tk.Tk):
         y = abs((self.winfo_screenheight() - h)) // 2
         return x, y
 
-    def draw_board(self, w=WIDTH, h=HEIGHT):
+    def draw_board(self):
         """Board broken with frames into table cells."""
         self.style = ttk.Style()
         self.style.theme_use('clam')  # if these themes("vista" and "xpnative") are installed on the computer,
                                       # the progress bar color does not change, remains green.
         self.style.configure('Board.TFrame', borderwidth=3, relief=tk.RAISED, background='SaddleBrown')
-        self.width = w
-        self.height = h
         self.height0 = self.height2 = int(0.05 * self.height)
         self.height1 = self.height - self.height0 - self.height2
 

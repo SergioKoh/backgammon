@@ -3,6 +3,7 @@ from tkinter import ttk
 from _collections import deque
 
 WIDTH, HEIGHT = 1200, 800
+WIDTH_MIN, HEIGHT_MIN = 600, 400
 
 """The initial position of the chips on the board.
     Numbers greater > 0 show the location and the number of chips of 1 player by points.
@@ -24,7 +25,6 @@ class FCanvas(tk.Canvas):
         self.wt = self.width // 2
         self.ht = int(self.height * 3 / 4)
         self.position = position
-
         self.bind("<Configure>", self.change_resize)
         self.height = self.master.winfo_reqheight()
         self.width = self.master.winfo_reqwidth()
@@ -35,7 +35,9 @@ class FCanvas(tk.Canvas):
         hscale = event.height / self.height
         self.width = event.width
         self.height = event.height
-        self.scale("all", 0, 0, wscale, hscale)
+        self.scale("cp", 0, 0, wscale, hscale)
+        self.scale("co", 0, 0, wscale, hscale)
+
 
     def draw_chips(self, quantity):
         """"""
@@ -45,7 +47,6 @@ class FCanvas(tk.Canvas):
             self.chip_color = 'black'
         x0 = 0.15 * self.width
         x1 = 0.85 * self.width
-        xr = x1 - x0
         for i in range(abs(quantity)):
             if self.position < 12:
                 y0 = self.height - 0.7 * self.width - i * 0.7 * self.width
@@ -53,14 +54,7 @@ class FCanvas(tk.Canvas):
             else:
                 y0 = i * 0.7 * self.width
                 y1 = 0.7 * self.width + i * 0.7 * self.width
-            yr = y1 - y0
-            yx = yr - xr
-            if yx > 0:
-                y1 = y1 - yx
-            if yx < 0:
-                x0 = x0 + 0.5 * yx
-                x1 = x1 - 0.5 * yx
-            self.create_oval(x0, y0, x1, y1, fill=self.chip_color)
+            self.create_oval(x0, y0, x1, y1, fill=self.chip_color, tag='co')
 
 
 
@@ -96,17 +90,17 @@ def canvases_init(frame0, frame1, width, height):
         if position >= 12:  # drawing triangles based on position
             if not position % 2:
                 canvas.create_polygon((0, 0), (canvas.wt, canvas.ht), (canvas.wt + canvas.wt, 0),
-                                      fill='orange', outline='black')
+                                      fill='orange', outline='black', tag='cp')
             else:
                 canvas.create_polygon((0, 0), (canvas.wt, 1.1 * canvas.ht), (canvas.wt + canvas.wt, 0),
-                                      fill='sienna', outline='black')
+                                      fill='sienna', outline='black', tag='cp')
         else:
             if not position % 2:
                 canvas.create_polygon((0, canvas.height), (canvas.wt, canvas.height - canvas.ht),
-                                      (canvas.wt + canvas.wt, canvas.height), fill='orange', outline='black')
+                                      (canvas.wt + canvas.wt, canvas.height), fill='orange', outline='black', tag='cp')
             else:
                 canvas.create_polygon((0, canvas.height), (canvas.wt, 1.1 * canvas.height - canvas.ht),
-                                      (canvas.wt + canvas.wt, canvas.height), fill='sienna', outline='black')
+                                      (canvas.wt + canvas.wt, canvas.height), fill='sienna', outline='black', tag='cp')
         canvas.draw_chips(location_chips[position])
         canvases.append(canvas)
         position += 1
