@@ -93,6 +93,7 @@ class Window(tk.Tk):
         self.style.theme_use('clam')  # if these themes("vista" and "xpnative") are installed on the computer,
                                       # the progress bar color does not change, remains green.
         self.style.configure('Board.TFrame', borderwidth=3, relief=tk.RAISED, background='SaddleBrown')
+
         self.height0 = self.height2 = int(0.05 * self.height)
         self.height1 = self.height - self.height0 - self.height2
 
@@ -118,28 +119,31 @@ class Window(tk.Tk):
         self.orient = orient
         self.color0 = color0
         self.color1 = color1
+
+        self.style.configure('Color0.Horizontal.TProgressbar', background=self.color0)
+        self.style.configure('Color1.Horizontal.TProgressbar', background=self.color1)
+        self.style.configure('Color0.Vertical.TProgressbar', background=self.color0)
+        self.style.configure('Color1.Vertical.TProgressbar', background=self.color1)
+
         if self.orient == 'horizontal':
             if self.frame is self.frame0:
-                self.style.configure('Color0.Horizontal.TProgressbar', background=self.color0)
                 self.horbar_color0 = ttk.Progressbar(frame, length=int(0.5 * WIDTH_MIN), orient=self.orient,
                                                      style='Color0.Horizontal.TProgressbar')
                 self.horbar_color0['value'] = 50
                 self.horbar_color0.pack(anchor='center')
             else:
-                self.style.configure('Color1.Horizontal.TProgressbar', background=self.color1)
                 self.horbar_color1 = ttk.Progressbar(frame, length=int(0.5 * WIDTH_MIN), orient=self.orient,
                                                      style='Color1.Horizontal.TProgressbar')
                 self.horbar_color1['value'] = 50
                 self.horbar_color1.pack(anchor='center')
         else:
-            self.style.configure('Color0.Vertical.TProgressbar', background=self.color0)
             self.verbar_color0 = ttk.Progressbar(frame, length=int(0.45 * HEIGHT_MIN), orient=self.orient,
                                                  style='Color0.Vertical.TProgressbar')
             self.verbar_color0['value'] = 50
             self.verbar_color0.pack(expand=True, anchor='n')
 
             self.color = 'black'
-            self.style.configure('Color1.Vertical.TProgressbar', background=self.color1)
+
             self.verbar_color1 = ttk.Progressbar(frame, length=int(0.45 * HEIGHT_MIN), orient=self.orient,
                                                  style='Color1.Vertical.TProgressbar')
             self.verbar_color1['value'] = 50
