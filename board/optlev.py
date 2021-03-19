@@ -1,6 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 
+import board
+import fields
+
+
 
 class Option:
     """Game option selection"""
@@ -14,38 +18,38 @@ class Option:
         self.style.configure('Sun.Horizontal.TScale', relief=tk.SUNKEN, background='Moccasin')
         self.style.configure('Sl.Sun.Horizontal.TScale', sliderlength=140)
         self.style.configure('Sun.TLabel', font=('segoe print', 14), relief=tk.SUNKEN, background='Moccasin')
-        self.style.configure('C.Sun.TLabel', background='black', foreground='white', anchor=tk.LEFT, width=6)
-        self.style.configure('Co.Sun.TLabel', background='white', anchor=tk.LEFT, width=6)
+        self.style.configure('C.Sun.TLabel', background='white', anchor=tk.LEFT, width=6)
+        self.style.configure('Co.Sun.TLabel', background='black', foreground='white', anchor=tk.LEFT, width=6)
 
         self.variable_text = tk.StringVar()
         if self.to == 2:
             self.variable_text.set('no')
             self.scale = ttk.Scale(self.frame, from_=self.from_, to=self.to, orient=tk.HORIZONTAL,
-                                   style='Sl.Sun.Horizontal.TScale', length=280, command=self.change)
+                                   style='Sl.Sun.Horizontal.TScale', length=280, command=self.change_option)
         else:
             self.variable_text.set(self.from_)
             self.scale = ttk.Scale(self.frame, from_=self.from_, to=self.to, orient=tk.HORIZONTAL,
-                                   style='Sun.Horizontal.TScale', length=280, command=self.change)
+                                   style='Sun.Horizontal.TScale', length=280, command=self.change_option)
 
         if self.text == '1 player piece':
-            self.variable_text.set('black')
-            self.label_color = ttk.Label(self.frame, textvariable=self.variable_text, style='C.Sun.TLabel')
+            self.variable_text.set('snow')
+            self.label_option = ttk.Label(self.frame, textvariable=self.variable_text, style='C.Sun.TLabel')
         elif self.text == '2 player piece':
-            self.variable_text.set('white')
-            self.label_color = ttk.Label(self.frame, textvariable=self.variable_text, style='Co.Sun.TLabel')
+            self.variable_text.set('black')
+            self.label_option = ttk.Label(self.frame, textvariable=self.variable_text, style='Co.Sun.TLabel')
         else:
-            self.label_color = ttk.Label(self.frame, textvariable=self.variable_text, style='Sun.TLabel')
+            self.label_option = ttk.Label(self.frame, textvariable=self.variable_text, style='Sun.TLabel')
 
         self.label = ttk.Label(self.frame, text=self.text, style='Sun.TLabel')
 
         self.label.grid(column=0, row=0, sticky='w', padx=10, pady=10)
-        self.label_color.grid(column=1, row=0, sticky='e', padx=10, pady=10)
+        self.label_option.grid(column=1, row=0, sticky='e', padx=10, pady=10)
         self.scale.grid(column=0, row=1, columnspan=2, sticky='nsew', padx=10, pady=10)
 
-    def change(self, value_scale):
-        """Changing options."""
-        self.colors_1 = ('black', 'purple', 'yellow', 'green', 'aqua')
-        self.colors_2 = ('white', 'gray', 'maroon',  'olive', 'blue')
+    def change_option(self, value_scale):
+        """Changing option."""
+        self.colors_1 = ('snow', 'purple', 'yellow', 'green', 'aqua')
+        self.colors_2 = ('black', 'gray', 'maroon',  'olive', 'blue')
 
         self.value_scale = value_scale
         if self.v != int(float(self.value_scale)):  # to remove instability with frequent changes to the style configuration
@@ -59,14 +63,15 @@ class Option:
             elif self.text == '1 player piece':
                 self.bg = self.colors_1[self.v]
                 self.variable_text.set(self.bg)
-                if self.bg == 'black':
-                    self.style.configure('C.Sun.TLabel', background=self.bg, foreground='white')
-                else:
-                    self.style.configure('C.Sun.TLabel', background=self.bg, foreground='black')
+                self.style.configure('C.Sun.TLabel', background=self.bg, foreground='black')
             elif self.text == '2 player piece':
                 self.bg = self.colors_2[self.v]
                 self.variable_text.set(self.bg)
-                self.style.configure('Co.Sun.TLabel', background=self.bg, foreground='black')
+                if self.bg == 'black':
+                    self.style.configure('Co.Sun.TLabel', background=self.bg, foreground='white')
+                else:
+                    self.style.configure('Co.Sun.TLabel', background=self.bg, foreground='black')
+
 
 
 class OToplevel(tk.Toplevel):
@@ -103,7 +108,7 @@ class OToplevel(tk.Toplevel):
 
         self.list_text = ('time per move(sec)', 'time per game(min)', 'bet size', 'match up to points',
                            '1 player piece', '2 player piece', 'Doubling cube')
-        self.from_to = ((10, 30), (1, 20), (1, 100), (1, 15), (0, 4), (0, 4), (0, 2))
+        self.from_to = ((10, 30), (1, 20), (1, 99), (1, 15), (0, 4), (0, 4), (0, 2))
         self.options = []
         self.frames = []
         for i in range(2):
@@ -127,17 +132,19 @@ class OToplevel(tk.Toplevel):
         """Closing the dialog window on creating a dictionary of options"""
         self.destroy()
         self.master.lift()
+        board.Window.flag_option = 1
         self.state_options = []
         self.keys_option = ('time_move', 'time_game', 'bet_size', 'match_to_points',
-                            'color_1', 'color_2', 'doubling_cube')
-        i = 0
+                            'color_0', 'color_1', 'doubling_cube')
+
         for option in self.options:
             self.state_option = option.variable_text.get()
             self.state_options.append(self.state_option)
-            i += 1
+
         self.dict_options = dict(zip(self.keys_option, self.state_options))
 
-
-
-
-
+        bet = self.dict_options['bet_size']
+        points = self.dict_options['match_to_points']
+        self.master.title(f'bet size {bet}, match_to_points {points}')
+        fields.color_chips(self)
+        board.Window.change_progress_bar(self.master, self.dict_options)
