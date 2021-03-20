@@ -148,3 +148,4 @@ class OToplevel(tk.Toplevel):
         self.master.title(f'bet size {bet}, match_to_points {points}')
         fields.color_chips(self)
         board.Window.change_progress_bar(self.master, self.dict_options)
+        board.Window.change_bar(self.master)

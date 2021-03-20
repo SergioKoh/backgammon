@@ -20,7 +20,6 @@ class HFrame(ttk.Frame):
             self.style.configure('Board.TFrame', borderwidth=1, relief=tk.RAISED, background='SaddleBrown')
             self.height = height // 9
             self.width = width
-
             self.bar_frames = []
 
             for i in range(5):
@@ -32,7 +31,7 @@ class HFrame(ttk.Frame):
                 else:
                     f = ttk.Frame(self, style='Board.TFrame', width=self.width, height=self.height)
                     f.grid(column=0, row=i, sticky='nsew')
-                    tk.Grid.rowconfigure(self, index=i, weight=1)
+                    tk.Grid.rowconfigure(self, index=i)
                     self.bar_frames.append(f)
             tk.Grid.columnconfigure(self, index=0, weight=1)
         else:
@@ -89,7 +88,7 @@ class WFrame(ttk.Frame):
         Window.progress_bar(self.master, self.frame0, self.orient, self.namber)
         self.namber = 1
         Window.progress_bar(self.master, self.frame4, self.orient, self.namber)
-        Window.scoreboard(self.master, self.frame2)
+        Window.bar(self.master, self.frame2)
         fields.canvases_init(self.frame1, self.frame3, self.frame1.width, self.frame1.height)
 
 
@@ -197,6 +196,33 @@ class Window(tk.Tk):
         self.style.configure('Left0.Vertical.TProgressbar', background=self.options['color_0'])
         self.style.configure('Left1.Vertical.TProgressbar', background=self.options['color_1'])
 
-    def scoreboard(self, frame):
+    def bar(self, frame):
         """"""
-        pass
+        self.bar = frame
+        self.bars = self.bar.bar_frames
+
+        self.style.configure('Bar.TLabel', font=('vineta bt', 30), relief=tk.RAISED, background='SaddleBrown',
+                             borderwidth=3, anchor=tk.CENTER, width=2)
+        self.style.configure('P0.Bar.TLabel', foreground='snow')
+
+        self.bar_1 = tk.Canvas(self.bars[0], width=self.bar.width, height=3 * self.bar.height, bg='SaddleBrown')
+        self.point_1 = ttk.Label(self.bars[1], text='00', style='Bar.TLabel')
+        self.doubling_cube = tk.Canvas(self.bars[2], width=self.bar.width, height=self.bar.height, bg='SaddleBrown')
+        self.point_0 = ttk.Label(self.bars[3], text='00', style='P0.Bar.TLabel')
+        self.bar_0 = tk.Canvas(self.bars[4], width=self.bar.width, height=3 * self.bar.height, bg='SaddleBrown')
+
+        self.bar_1.pack(expand=True, fill=tk.BOTH)
+        self.point_1.pack(expand=True, fill=tk.BOTH)
+        self.doubling_cube.pack(expand=True, fill=tk.BOTH)
+        self.point_0.pack(expand=True, fill=tk.BOTH)
+        self.bar_0.pack(expand=True, fill=tk.BOTH)
+
+        self.cube = self.doubling_cube.create_rectangle(3, 3, self.bar.width, self.bar.height, fill='orange',
+                                                       outline='SaddleBrown', width=3, activedash=(5, 4))
+        self.cube_digit = self.doubling_cube.create_text(self.bar.width // 2, self.bar.height // 2, text="64",
+                                                         justify=tk.CENTER, font=('French Script MT', 60, 'bold'))
+
+    def change_bar(self):
+        """"""
+        self.style.configure('Bar.TLabel', foreground=self.options['color_1'])
+        self.style.configure('P0.Bar.TLabel', foreground=self.options['color_0'])
