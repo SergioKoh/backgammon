@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
-import board
-import fields
+import board.board as bb
+
 
 
 
@@ -87,7 +87,7 @@ class OToplevel(tk.Toplevel):
         self.resizable(False, False)
         self.lift(self.master)
         self.protocol("WM_DELETE_WINDOW", master.destroy)
-        self.splitting_segments()
+
 
     def center_screen(self, w, h):
         """Centering the toplevel."""
@@ -132,7 +132,6 @@ class OToplevel(tk.Toplevel):
         """Closing the dialog window on creating a dictionary of options"""
         self.destroy()
         self.master.lift()
-        board.Window.flag_option = 1
         self.state_options = []
         self.keys_option = ('time_move', 'time_game', 'bet_size', 'match_to_points',
                             'color_0', 'color_1', 'doubling_cube')
@@ -145,7 +144,8 @@ class OToplevel(tk.Toplevel):
 
         bet = self.dict_options['bet_size']
         points = self.dict_options['match_to_points']
-        self.master.title(f'bet size {bet}, match_to_points {points}')
-        fields.color_chips(self)
-        board.Window.change_progress_bar(self.master, self.dict_options)
-        board.Window.change_bar(self.master)
+        self.master.title(f'bet size {bet}, match to points {points}')
+#        bf.color_chips(self)
+        bb.Board.setting_progress_bar(self.master, self.dict_options)
+        bb.Board.setting_bar(self.master)
+        return self.dict_options

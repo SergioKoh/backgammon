@@ -1,22 +1,20 @@
 import tkinter as tk
 from tkinter import ttk
 
-import main
-import fields
-import optlev
+import board.fields as bf
 
 WIDTH, HEIGHT = 1200, 800
 WIDTH_MIN, HEIGHT_MIN = 600, 400
 
 
 class HFrame(ttk.Frame):
-    """Chip position container"""
+    """Breaking the bar and board fields into frames."""
 
     def __init__(self, master, width, height):
         super().__init__(master)
         self.master = master
         self.style = ttk.Style()
-        if width == master.width2:
+        if width is master.width1_2:
             self.style.configure('Board.TFrame', borderwidth=1, relief=tk.RAISED, background='SaddleBrown')
             self.height = height // 9
             self.width = width
@@ -52,27 +50,27 @@ class HFrame(ttk.Frame):
 
 
 class WFrame(ttk.Frame):
-    """Container for fields."""
+    """Vertical breakdown of the board into frames."""
 
     def __init__(self, master, width, height):
         super().__init__(master)
         self.master = master
         self.style = ttk.Style()
         self.style.configure('Board.TFrame', borderwidth=3, relief=tk.RAISED, background='SaddleBrown')
-        self.height = height
-        self.width = width
-        self.width0 = int(0.017 * self.width)
-        self.width1 = int(0.449 * self.width)
-        self.width2 = int(0.068 * self.width)
-        self.width3 = int(0.449 * self.width)
-        self.width4 = width - self.width0 - self.width1 - self.width2 - self.width3 - self.width3
+        self.height1 = height
+        self.width1 = width
+        self.width1_0 = int(0.017 * self.width1)
+        self.width1_1 = int(0.449 * self.width1)
+        self.width1_2 = int(0.068 * self.width1)
+        self.width1_3 = int(0.449 * self.width1)
+        self.width1_4 = self.width1 - self.width1_0 - self.width1_1 - self.width1_2 - self.width1_3
 
-        self.frame0 = ttk.Frame(self, style='Board.TFrame', width=self.width0, height=self.height)
-        self.frame1 = HFrame(self, width=self.width1, height=self.height)
-        self.frame2 = HFrame(self, width=self.width2, height=self.height)
-        self.frame3 = HFrame(self, width=self.width3, height=self.height)
-        self.frame4 = ttk.Frame(self, style='Board.TFrame', width=self.width3, height=self.height)
-        self.frames = (self.frame0, self.frame1, self.frame2, self.frame3, self.frame4)
+        self.frame1_0 = ttk.Frame(self, style='Board.TFrame', width=self.width1_0, height=self.height1)
+        self.frame1_1 = HFrame(self, width=self.width1_1, height=self.height1)
+        self.frame1_2 = HFrame(self, width=self.width1_2, height=self.height1)
+        self.frame1_3 = HFrame(self, width=self.width1_3, height=self.height1)
+        self.frame1_4 = ttk.Frame(self, style='Board.TFrame', width=self.width1_4, height=self.height1)
+        self.frames = (self.frame1_0, self.frame1_1, self.frame1_2, self.frame1_3, self.frame1_4)
 
         i = 0
         for f in self.frames:
@@ -85,15 +83,15 @@ class WFrame(ttk.Frame):
 
         self.orient = 'vertical'
         self.namber = 0
-        Window.progress_bar(self.master, self.frame0, self.orient, self.namber)
+        Board.progress_bar(self.master, self.frame1_0, self.orient, self.namber)
         self.namber = 1
-        Window.progress_bar(self.master, self.frame4, self.orient, self.namber)
-        Window.bar(self.master, self.frame2)
-        fields.canvases_init(self.frame1, self.frame3, self.frame1.width, self.frame1.height)
+        Board.progress_bar(self.master, self.frame1_4, self.orient, self.namber)
+        Board.bar(self.master, self.frame1_2)
 
 
-class Window(tk.Tk):
-    """Window initialization."""
+
+class Board(tk.Tk):
+    """Board initialization."""
 
     def __init__(self, w, h):
         super().__init__()
@@ -135,6 +133,9 @@ class Window(tk.Tk):
 
         self.progress_bar(self.frame0)
         self.progress_bar(self.frame2)
+        self.points = bf.points_init(self.frame1.frame1_1, self.frame1.frame1_3,
+                                     self.frame1.frame1_1.width, self.frame1.frame1_1.height)
+        return self.points
 
     def progress_bar(self, frame, orient='horizontal', namber=0):
         """Two Progress bars, upper and lower, show the allotted time per move.
@@ -181,7 +182,7 @@ class Window(tk.Tk):
                                                         maximum=15, style='Right0.Vertical.TProgressbar')
                 self.discarded_chips0.pack(expand=True, anchor='s')
 
-    def change_progress_bar(self, options):
+    def setting_progress_bar(self, options):
         """"""
         self.options = options
         self.time_move1['value'] = self.options['time_move']
@@ -222,7 +223,11 @@ class Window(tk.Tk):
         self.cube_digit = self.doubling_cube.create_text(self.bar.width // 2, self.bar.height // 2, text="64",
                                                          justify=tk.CENTER, font=('French Script MT', 60, 'bold'))
 
-    def change_bar(self):
+    def setting_bar(self):
         """"""
         self.style.configure('Bar.TLabel', foreground=self.options['color_1'])
         self.style.configure('P0.Bar.TLabel', foreground=self.options['color_0'])
+        if self.options['doubling_cube'] == 'no':
+            self.doubling_cube.itemconfig(self.cube_digit, state=tk.HIDDEN)
+        else:
+            self.doubling_cube.itemconfig(self.cube_digit, state=tk.NORMAL)

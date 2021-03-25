@@ -1,6 +1,6 @@
 
 class Player:
-    def __init__(self, nickname, password):
+    def __init__(self, nickname=0, password=12345):
         self.nickname = nickname
         self.password = password
 
