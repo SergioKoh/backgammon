@@ -11,7 +11,7 @@ class Player:
 
 
     def move_piece(self):
-        """Player moves the pieces on the board."""
+        """Player moves the pieces on the root."""
         pass
 
 

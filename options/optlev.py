@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-import board.board as bb
+import root.board as bb
 
 
 
@@ -52,11 +52,11 @@ class Option:
         self.colors_2 = ('black', 'gray', 'maroon',  'olive', 'blue')
 
         self.value_scale = value_scale
-        if self.v != int(float(self.value_scale)):  # to remove instability with frequent changes to the style configuration
-            self.v = int(float(self.value_scale))
+        if self.v != round(float(self.value_scale)):  # to remove instability with frequent changes to the style configuration
+            self.v = round(float(self.value_scale))
             if self.from_:
                 self.variable_text.set(self.v)
-            elif self.to == 2 and self.v >= 1:
+            elif self.to == 2 and self.v > 1:
                 self.variable_text.set('yes')
             elif self.to == 2 and self.v < 1:
                 self.variable_text.set('no')
@@ -146,6 +146,6 @@ class OToplevel(tk.Toplevel):
         points = self.dict_options['match_to_points']
         self.master.title(f'bet size {bet}, match to points {points}')
 #        bf.color_chips(self)
-        bb.Board.setting_progress_bar(self.master, self.dict_options)
-        bb.Board.setting_bar(self.master)
+#        bb.Board.setting_progress_bar(self.master, self.dict_options)
+#        bb.Board.setting_bar(self.master)
         return self.dict_options

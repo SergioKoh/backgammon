@@ -1,10 +1,16 @@
+""" Two Progress bars, upper and lower, show the allotted time per move.
+    The two left bar addresses show the time allocated to the players for the game.
+    The two right ones show the number of pieces removed from the board.
+
+"""
+
 import tkinter as tk
 from tkinter import ttk
 
-import board.fields as bf
+import root.fields as bf
 
-WIDTH, HEIGHT = 1200, 800
-WIDTH_MIN, HEIGHT_MIN = 600, 400
+#WIDTH, HEIGHT = 1200, 800
+#WIDTH_MIN, HEIGHT_MIN = 600, 400
 
 
 class HFrame(ttk.Frame):
@@ -81,34 +87,26 @@ class WFrame(ttk.Frame):
         tk.Grid.columnconfigure(self, index=1, weight=1)
         tk.Grid.columnconfigure(self, index=3, weight=1)
 
-        self.orient = 'vertical'
-        self.namber = 0
-        Board.progress_bar(self.master, self.frame1_0, self.orient, self.namber)
-        self.namber = 1
-        Board.progress_bar(self.master, self.frame1_4, self.orient, self.namber)
-        Board.bar(self.master, self.frame1_2)
+#        self.orient = 'vertical'
+#        self.namber = 0
+#        Board.progress_bar(self.master, self.frame1_0, self.orient, self.namber)
+#        self.namber = 1
+#        Board.progress_bar(self.master, self.frame1_4, self.orient, self.namber)
+#        Board.bar(self.master, self.frame1_2)
 
 
 
 class Board(tk.Tk):
     """Board initialization."""
 
-    def __init__(self, w, h):
+    def __init__(self, w, h, w_min, h_min):
         super().__init__()
         self.title("Backgammon")
         self.width = w
         self.height = h
-        x, y = self.center_screen(w, h)
-        self.geometry(f'{w}x{h}+{x}+{y}')
         self.resizable(True, True)
-        self.minsize(WIDTH_MIN, HEIGHT_MIN)
-        self.draw_board()
-
-    def center_screen(self, w, h):
-        """Centering the window."""
-        x = abs((self.winfo_screenwidth() - w)) // 2
-        y = abs((self.winfo_screenheight() - h)) // 2
-        return x, y
+        self.minsize(w_min, h_min)
+        self.state("zoomed")
 
     def draw_board(self):
         """Board broken with frames into table cells."""
@@ -131,71 +129,13 @@ class Board(tk.Tk):
         tk.Grid.columnconfigure(self, index=0, weight=1)
         tk.Grid.rowconfigure(self, index=1, weight=1)
 
-        self.progress_bar(self.frame0)
-        self.progress_bar(self.frame2)
+#        self.progress_bar(self.frame0)
+#        self.progress_bar(self.frame2)
         self.points = bf.points_init(self.frame1.frame1_1, self.frame1.frame1_3,
                                      self.frame1.frame1_1.width, self.frame1.frame1_1.height)
         return self.points
 
-    def progress_bar(self, frame, orient='horizontal', namber=0):
-        """Two Progress bars, upper and lower, show the allotted time per move.
-            The two right ones show the number of pieces removed from the board.
-        """
-        self.frame = frame
-        self.orient = orient
-        self.color0 = 'snow'
-        self.color1 = 'black'
-        self.namber = namber
 
-        self.style.configure('Bottom0.Horizontal.TProgressbar', background=self.color0)
-        self.style.configure('Top1.Horizontal.TProgressbar', background=self.color1)
-        self.style.configure('Right0.Vertical.TProgressbar', background=self.color0)
-        self.style.configure('Right1.Vertical.TProgressbar', background=self.color1)
-        self.style.configure('Left0.Vertical.TProgressbar', background=self.color0)
-        self.style.configure('Left1.Vertical.TProgressbar', background=self.color1)
-
-        if self.orient == 'horizontal':
-            if self.frame is self.frame0:
-                self.time_move1 = ttk.Progressbar(frame, length=int(0.5 * WIDTH_MIN), orient=self.orient, maximum=30,
-                                                  style='Top1.Horizontal.TProgressbar')
-                self.time_move1.pack(anchor='center')
-            else:
-                self.time_move0 = ttk.Progressbar(frame, length=int(0.5 * WIDTH_MIN), orient=self.orient, maximum=30,
-                                                  style='Bottom0.Horizontal.TProgressbar')
-                self.time_move0.pack(anchor='center')
-        else:
-            if not self.namber:
-                self.time_game1 = ttk.Progressbar(frame, length=int(0.45 * HEIGHT_MIN), orient=self.orient, maximum=20,
-                                                  style='Left1.Vertical.TProgressbar')
-                self.time_game1.pack(expand=True, anchor='s')
-
-                self.time_game0 = ttk.Progressbar(frame, length=int(0.45 * HEIGHT_MIN), orient=self.orient, maximum=20,
-                                                  style='Left0.Vertical.TProgressbar')
-                self.time_game0.pack(expand=True, anchor='n')
-
-            else:
-                self.discarded_chips1 = ttk.Progressbar(frame, length=int(0.45 * HEIGHT_MIN), orient=self.orient,
-                                                        maximum=15, style='Right1.Vertical.TProgressbar')
-                self.discarded_chips1.pack(expand=True, anchor='n')
-
-                self.discarded_chips0 = ttk.Progressbar(frame, length=int(0.45 * HEIGHT_MIN), orient=self.orient,
-                                                        maximum=15, style='Right0.Vertical.TProgressbar')
-                self.discarded_chips0.pack(expand=True, anchor='s')
-
-    def setting_progress_bar(self, options):
-        """"""
-        self.options = options
-        self.time_move1['value'] = self.options['time_move']
-        self.time_move0['value'] = self.options['time_move']
-        self.time_game1['value'] = self.options['time_game']
-        self.time_game0['value'] = self.options['time_game']
-
-        self.style.configure('Bottom0.Horizontal.TProgressbar', background=self.options['color_0'])
-        self.style.configure('Top1.Horizontal.TProgressbar', background=self.options['color_1'])
-        self.style.configure('Right0.Vertical.TProgressbar', background=self.options['color_0'])
-        self.style.configure('Right1.Vertical.TProgressbar', background=self.options['color_1'])
-        self.style.configure('Left0.Vertical.TProgressbar', background=self.options['color_0'])
-        self.style.configure('Left1.Vertical.TProgressbar', background=self.options['color_1'])
 
     def bar(self, frame):
         """"""

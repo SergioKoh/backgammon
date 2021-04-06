@@ -6,7 +6,7 @@ from _collections import deque
 
 
 
-"""The initial position of the chips on the board.
+"""The initial position of the chips on the root.
     Numbers greater > 0 show the location and the number of chips of 1 player by points.
     Numbers greater < 0 show the location and the number of chips of 2 player by points.
     0 in the list indicates that the position is empty.
