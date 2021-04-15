@@ -38,7 +38,7 @@ class MTimer:
         self.style.configure('Left1.Vertical.TProgressbar', background=self.color1)
 
         if self.orient == 'horizontal':
-            if self.frame is self.frame0:
+            if self.frame is self.bottom_edge:
                 self.time_move1 = ttk.Progressbar(frame, length=int(0.5 * WIDTH_MIN), orient=self.orient, maximum=30,
                                                   style='Top1.Horizontal.TProgressbar')
                 self.time_move1.pack(anchor='center')

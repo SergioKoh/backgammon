@@ -1,10 +1,12 @@
-import root.board as bb
+import root.board as rb
+import root.fields as rf
 import options.optlev as oo
 import counters.chip as cc
 import players.player as pp
 import watch.clock as wc
 import dice.dice as dd
 import scoring.scoreboard as ss
+import styles.sboards as bst
 
 
 WIDTH, HEIGHT = 1200, 800
@@ -12,17 +14,23 @@ WIDTH_MIN, HEIGHT_MIN = 600, 400
 
 
 def main():
-    board = bb.Board(WIDTH, HEIGHT, WIDTH_MIN, HEIGHT_MIN)
-    board_points = board.draw_board()
-    player_0 = pp.Player(0)
-    player_1 = pp.Player(1)
-    backgammon_clock = wc.Clock()
-    create_chips(board_points)
-    create_dice()
-    scoreboard_0 = ss.Score(0)
-    scoreboard_1 = ss.Score(1)
-    options_toplevel= oo.OToplevel(board, WIDTH_MIN, HEIGHT_MIN)
-    options = options_toplevel.splitting_segments()
+
+    board = rb.Board(WIDTH_MIN, HEIGHT_MIN)
+    board_style = bst.BStyle(board)
+    basis_field = board.draw_board(board_style)
+    playing_field = rf.Fields(basis_field)
+    bar = playing_field.draw_bar()
+#    board_points = playing_field.draw_fields()
+
+    #    player_0 = pp.Player(0)
+#    player_1 = pp.Player(1)
+#    backgammon_clock = wc.Clock()
+#    create_chips(board_points)
+#    create_dice()
+#    scoreboard_0 = ss.Score(0)
+#    scoreboard_1 = ss.Score(1)
+#    options_toplevel= oo.OToplevel(board, WIDTH_MIN, HEIGHT_MIN)
+#    options = options_toplevel.splitting_segments()
     board.mainloop()
 
 def create_chips(board_points):
